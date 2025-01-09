@@ -14,8 +14,8 @@ def detect_encoding(file_path):
 # 创建一个索引
 def create_index(directory):
     schema = Schema(path=TEXT(stored=True), content=TEXT)
-    if not os.path.exists("index"):
-        os.mkdir("index")
+    if not os.path.exists("../index"):
+        os.mkdir("../index")
     ix = create_in("index", schema)
     writer = ix.writer()
 
