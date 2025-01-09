@@ -160,7 +160,8 @@ def mongdb_test(uri):
     client.close()
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+    # return 1
     # with open(r"./output_with_raw_array.csv", 'r', encoding='utf-8-sig') as f:
     #     reader = csv.reader(f)
     #     for _ in range(48):
@@ -185,9 +186,4 @@ if __name__ == '__main__':
     #             exit(0)
     #         if j % 10 == 0:
     #             time.sleep(10)
-    # mongdb_test("mongodb+srv://Vishal:Vishal22610@anime.7z766.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    # groq_api('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')
-    # test_openai('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')
-    # verify_github_token('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')
-    test_huggingface_api('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')
-    # verify_cohere_api_key('7ppgcyZlh0gSg2OSvoGv1TEDYQbjtafinuJUjMxj')
+
