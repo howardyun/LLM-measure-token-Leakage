@@ -50,13 +50,13 @@ for file_path in file_paths:
 # 提取数据
 months = list(monthly_counts.keys())
 openai_counts = [monthly_counts[month]['OpenAI'] for month in months]
-grog_counts = [monthly_counts[month]['Groq'] for month in months]
+groq_counts = [monthly_counts[month]['Groq'] for month in months]
 huggingface_counts = [monthly_counts[month]['HuggingFace'] for month in months]
 
 # 绘制折线图
 plt.figure(figsize=(14, 7))
 plt.plot(months, openai_counts, marker='o', label='OpenAI')
-plt.plot(months, grog_counts, marker='o', label='Groq')
+plt.plot(months, groq_counts, marker='o', label='Groq')
 plt.plot(months, huggingface_counts, marker='o', label='HuggingFace')
 
 plt.xlabel('Month')
