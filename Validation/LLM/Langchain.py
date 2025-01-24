@@ -18,6 +18,13 @@ from langchain.prompts import (
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
 import chromadb
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.document_loaders import TextLoader
+from langchain.vectorstores import Chroma
+
+
+
 
 chroma_client = chromadb.Client()
 
