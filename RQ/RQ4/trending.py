@@ -44,6 +44,11 @@ file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
 # 获取所有匹配的文件列表
 csv_files = sorted(glob.glob(file_pattern))
 
+
+
+
+
+
 # 遍历文件
 for file in csv_files:
     filename = os.path.basename(file)  # 获取文件名
@@ -56,18 +61,4 @@ for file in csv_files:
     # 在这里添加你的处理逻辑，例如读取 CSV 进行处理
 
 
-
-
-
-
-
-#
-# json_file_path = "../../monthly_spaceId_files/2022-03.json"
-# csv_file_path = "../Data/2022-03_scan_results.csv"
-#
-# repo_list_num, repo_list_leakage_num, total_leakage_token_num = process_files(json_file_path, csv_file_path)
-#
-# print(repo_list_num)
-# print(repo_list_leakage_num)
-# print(total_leakage_token_num)
 
