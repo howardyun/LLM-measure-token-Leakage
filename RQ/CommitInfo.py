@@ -4,7 +4,8 @@ import subprocess
 import re
 from datetime import datetime
 from huggingface_hub import HfApi
-API_TOKEN = "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"
+
+# API_TOKEN = ""
 
 # 确保 Git 允许访问这个目录
 subprocess.run(
