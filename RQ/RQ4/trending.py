@@ -24,6 +24,7 @@ def process_files(json_file, csv_file):
             parsed_list = ast.literal_eval(item)  # 解析字符串为列表
             if isinstance(parsed_list, list):
                 unique_raw_values = len(set(entry['raw'] for entry in parsed_list if 'raw' in entry))
+                
                 return unique_raw_values
         except (SyntaxError, ValueError):
             return None  # 解析失败返回 None
