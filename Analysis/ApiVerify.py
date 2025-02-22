@@ -299,10 +299,11 @@ def mongodb_test(uri,files):
     None: 直接打印连接测试结果。
     """
     client = None
+    files["organization"]="mongodb"
     try:
         # 创建 MongoDB 客户端，设置超时时间为5000毫秒
         client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-        files["organization"]="mongodb"
+        
 
         # 尝试执行一个简单的操作（如 ping）来测试连接
         client.admin.command('ping')
@@ -311,6 +312,7 @@ def mongodb_test(uri,files):
         files["available"]=1
         # 查看已有集合
         database_names = client.list_database_names()
+        files["context"]=""
         for collection in database_names:
             files["context"]=files["context"]+' '+collection
 
@@ -343,8 +345,8 @@ def postgresql_test(conn_string,files):
     conn = None
     try:
         # 创建 psycopg2 连接
-        conn = psycopg2.connect(conn_string)
         files["organization"]="postgresql"
+        conn = psycopg2.connect(conn_string)
         
         # 尝试执行一个简单的查询来测试连接
         cursor = conn.cursor()
@@ -439,6 +441,7 @@ def test_deepseek(deepseek_api,files):
         'Authorization': "Bearer "+deepseek_api, 
     }
     files["organization"]="deepseek"
+    files["valid"]=0
 
     try:
         # 发送 GET 请求
@@ -566,6 +569,8 @@ def test_replicate(api,files):
         )
         if response.status_code == 200:
             files["available"]=1
+        else :
+            files["available"]=0
     else:
         files["valid"]=0
         files["available"]=0
@@ -576,58 +581,60 @@ if __name__ == '__main__':
     # 检查文件夹是否存在
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
-    with open("./result/2024-12_scan_results.csv","a",encoding='utf-8-sig',newline='') as file:
-            fields=["Repository","api","organization","valid","available","userinfo","permissions","balance","models","datasets","spaces","context"]
-            writer=csv.DictWriter(file,fieldnames=fields)
-             # 如果文件是新创建的，则写入表头
-            if not file.tell():  # 如果文件指针在文件开始处，则认为是新文件
-                writer.writeheader()
-            with open(r"./2024-12_scan_results.csv", 'r', encoding='utf-8-sig') as f: 
-                reader = csv.reader(f)  
-                next(reader)
-                j=0
-                
-                for row in reader:
-                    api = eval(row[2])
-                    if api[0]==None:
-                        continue
-                    for m in api:
-                        files={'Repository':row[0],"api":m}          
-                        if m.startswith('hf_'):                           
-                            test_huggingface_api(m,files)
-                        elif m.startswith('sk-'):
-                            test_deepseek(m,files)
-                            if files["valid"]==1:
-                                break
-                            test_openai(m,files)
-                        elif m.startswith('gsk_'):
-                            groq_api(m,files)
-                        elif m.startswith('nvapi'):
-                            test_nvidia(m,files)
-                        elif m.startswith("ghp_") or m.startswith("github_"):
-                            verify_github_token(m,files)
-                        elif m.startswith("r8"):
-                            test_replicate(m,files)
-                        elif m.startswith("mongodb"):
-                            mongodb_test(m,files)
-                        elif m.startswith('postgre'):
-                            postgresql_test(m,files)
-                        else:
-                            test_Gemini(m,files)
-                            if files["valid"]==1:
-                                break
-                            verify_cohere_api_key(m,files)
-                            if files["valid"]==1:
-                                break
-                            test_anthropic(m,files)
-                            if files["valid"]==1:
-                                  break
-                            files["organization"]="unknow"
-                        if j==100:
-                            time.sleep(10)
-                            j=0
-                        j=j+1
-                        writer.writerow(files)
+    for i in range(10,13):
+        with open(f"./result/2023-{i}_scan_results.csv","a",encoding='utf-8-sig',newline='') as file:
+                fields=["Repository","api","organization","valid","available","userinfo","permissions","balance","models","datasets","spaces","context"]
+                writer=csv.DictWriter(file,fieldnames=fields)
+                # 如果文件是新创建的，则写入表头
+                if not file.tell():  # 如果文件指针在文件开始处，则认为是新文件
+                    writer.writeheader()
+                with open(f"./raw/2023-{i}_scan_results.csv", 'r', encoding='utf-8-sig') as f: 
+                    reader = csv.reader(f)  
+                    next(reader)
+                    j=0
+                    
+                    for row in reader:
+                        api = eval(row[2])
+                        if api[0]==None:
+                            continue
+                        for m in api:
+                            files={'Repository':row[0],"api":m}          
+                            if m.startswith('hf_') or m.startswith("api_org"):                           
+                                test_huggingface_api(m,files)
+                            elif m.startswith('sk-'):
+                                test_deepseek(m,files)
+                                if files["valid"]==1:
+                                    break
+                                test_openai(m,files)
+                            elif m.startswith('gsk_'):
+                                groq_api(m,files)
+                            elif m.startswith('nvapi'):
+                                test_nvidia(m,files)
+                            elif m.startswith("ghp_") or m.startswith("github_"):
+                                verify_github_token(m,files)
+                            elif m.startswith("r8"):
+                                test_replicate(m,files)
+                            elif m.startswith("mongodb"):
+                                mongodb_test(m,files)
+                            elif m.startswith('postgre'):
+                                postgresql_test(m,files)
+                            else:
+                                test_Gemini(m,files)
+                                if files["valid"]==1:
+                                    break
+                                verify_cohere_api_key(m,files)
+                                if files["valid"]==1:
+                                    break
+                                test_anthropic(m,files)
+                                if files["valid"]==1:
+                                    break
+                                files["organization"]="unknow"
+                            if j==100:
+                                time.sleep(10)
+                                j=0
+                            j=j+1
+                            writer.writerow(files)
+    
 
          
 
