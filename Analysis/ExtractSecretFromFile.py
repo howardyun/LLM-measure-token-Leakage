@@ -55,9 +55,9 @@
 import pandas as pd
 import re
 
-for i in range(3,10):
+for i in range(10,13):
     # 读取CSV文件
-    df = pd.read_csv(f'./trufflehog_scan_results/2024-0{i}_scan_results.csv')
+    df = pd.read_csv(f'./trufflehog_scan_results/2023-{i}_scan_results.csv')
 
     # 用于存储提取的键值对列表
     extracted_data = []
@@ -96,7 +96,7 @@ for i in range(3,10):
     df['Extracted Metadata'] = extracted_data_str
 
     # 保存更新后的CSV文件
-    df.to_csv(f'2024-0{i}_scan_results.csv', index=False)
+    df.to_csv(f'./raw/2023-{i}_scan_results.csv', index=False)
 
     # 输出新CSV文件的前几行以检查
     print(df.head())
