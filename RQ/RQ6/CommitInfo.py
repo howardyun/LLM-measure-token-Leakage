@@ -1,3 +1,5 @@
+import ast
+import glob
 import json
 import os
 import subprocess
@@ -5,6 +7,7 @@ import re
 from datetime import datetime
 
 import git
+import pandas as pd
 from huggingface_hub import HfApi
 
 from RQ.RQ6.CommitInfoClass import Commit, FileChange
@@ -30,14 +33,7 @@ file_diff_pattern = re.compile(r'''
 
 
 
-# 确保 Git 允许访问这个目录
-subprocess.run(
-    ["git", "config", "--global", "--add", "safe.directory", "F:/download_space/2022-06/awacke1_NLP-Lyric-Chorus-Image"],
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    text=True,
-    encoding="utf-8"
-)
+
 
 
 # Tools
@@ -77,7 +73,6 @@ def parse_git_commits(commits_string):
         if diffs:
             file_changes = file_diff_pattern.findall(diffs)
             for file_change in file_changes:
-                print(diffs)
                 old_file, new_file, code_diff = file_change
                 file_obj = FileChange(old_file, new_file, '00', '00',code_diff)
                 commit_obj.add_file_change(file_obj)
@@ -86,12 +81,30 @@ def parse_git_commits(commits_string):
     return commit_objects
 
 # function
+def get_time_interval(token_list,git_repo_path):
+    # 扫描 Git 历史记录
+    time_list = scan_git_history(git_repo_path, token_list)
+    print(time_list)
+    create_time = get_repo_create_time("awacke1/NLP-Lyric-Chorus-Image")
+    for date_str in time_list:
+        print(datetime.strptime(date_str, "%a %b %d %H:%M:%S %Y %z") - create_time)
+
+    return time_list
 def scan_git_history(repo_path, Token_list):
     """
     扫描 Git 历史记录中的敏感信息。
     :param repo_path: Git 仓库路径
     :param sensitive_patterns: 敏感信息的正则表达式列表
     """
+    # 确保 Git 允许访问这个目录
+    subprocess.run(
+        ["git", "config", "--global", "--add", "safe.directory",
+        repo_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8"
+    )
     datetimelist = []
     print("提取提交历史...")
     # commits = run_git_command(repo_path, ["rev-list", "--all"]).splitlines()
@@ -109,23 +122,62 @@ def scan_git_history(repo_path, Token_list):
         print("=" * 80)
     return datetimelist
 
-if __name__ == "__main__":
-    Token_list = ['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']
-    # Git 仓库路径
-    git_repo_path = r"F:\download_space\2022-06\awacke1_NLP-Lyric-Chorus-Image"
-    # 获取正则
-    with open(os.path.join(os.path.dirname(__file__), "../regexes_v2.json"), 'r') as f:
-        regexes = json.loads(f.read())
-    print(regexes.values)
-    # 定义敏感信息的正则表达式
-    sensitive_patterns = list(regexes.values())
 
-    # 扫描 Git 历史记录
-    time_list = scan_git_history(git_repo_path, Token_list)
-    print(time_list)
-    create_time = get_repo_create_time("awacke1/NLP-Lyric-Chorus-Image")
-    for date_str in time_list:
-        print(datetime.strptime(date_str, "%a %b %d %H:%M:%S %Y %z") - create_time)
+def process_files(repo_root_path,scan_file_path):
+    time_intervals = []
+    # 读取 CSV 文件
+    repo_list_leakage = pd.read_csv(scan_file_path)
+    print("出现漏洞数量:", len(repo_list_leakage))
+    for row in repo_list_leakage.itertuples():
+        # 有index的值所以是1和3
+        repo_name = row[1]
+        repo_extract = row[3]
+        try:
+            parsed_list = ast.literal_eval(repo_extract)  # 解析字符串为列表
+            if isinstance(parsed_list, list):
+                # 去重file信息
+                unique_file_values = list(set(entry['file'] for entry in parsed_list if 'file' in entry))
+                # 如果没有明文发现，则代表已经处理了
+                if len(unique_file_values) == 1 and unique_file_values[0] == '.git':
+                    # 获取token
+                    token_list = list(set(entry['raw'] for entry in parsed_list if 'raw' in entry))
+                    # 设置仓库路径
+                    git_repo_path = repo_root_path+'/'+repo_name.replace('/','_')
+                    # 获取时间间隔
+                    time_intervals.append(get_time_interval(token_list,git_repo_path))
+                else:
+                    continue
+        except (SyntaxError, ValueError):
+            print(os.path.join(repo_root_path, repo_name))
+            continue  # 解析失败返回 None
+    return time_intervals
+
+
+if __name__ == "__main__":
+    # 设定文件路径
+    folder_path = "../Data/"  # 修改为你的实际路径
+    file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
+
+    # 获取所有匹配的文件列表
+    csv_files = sorted(glob.glob(file_pattern))
+    for file in csv_files:
+        filename = os.path.basename(file)  # 获取文件名
+        time = filename.split("_")[0]
+        repo_file_path = f"../../monthly_spaceId_files/{time}.json"
+        scan_file_path = f"../Data/{time}_scan_results.csv"
+        # 将字符串转换为datetime对象
+        repo_time = datetime.strptime(time, "%Y-%m")
+        if repo_time >= datetime.strptime("2024-03", "%Y-%m"):
+            repo_root_path = f"E:/download_space/{time}"
+        else:
+            repo_root_path = f"F:/download_space/{time}"
+
+        repo_list_num, repo_list_leakage_num, total_leakage_token_num = process_files(repo_root_path, scan_file_path)
+
+        # 在这里添加你的处理逻辑，例如读取 CSV 进行处理
+
+
+
 
 
 
