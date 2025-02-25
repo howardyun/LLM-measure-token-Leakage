@@ -4,7 +4,7 @@ import json
 import os
 import subprocess
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import git
 import pandas as pd
@@ -12,7 +12,8 @@ from huggingface_hub import HfApi
 
 from RQ.RQ6.CommitInfoClass import Commit, FileChange
 
-# API_TOKEN = ""
+API_TOKEN = ""
+
 # 正则表达式匹配 commit 和 diff（支持每个文件的修改）
 commit_diff_pattern = re.compile(r'''
     commit\s(?P<commit_hash>\w+)\n
@@ -54,7 +55,7 @@ def run_git_command(repo_path, command):
         raise Exception(f"Git command failed: {' '.join(command)}\\n{result.stderr}")
     return result.stdout
 def get_repo_create_time(repo_name):
-    HF = HfApi()
+    HF = HfApi(token=API_TOKEN)
     space = HF.space_info(repo_name)
     return space.created_at
 def parse_git_commits(commits_string):
@@ -75,13 +76,16 @@ def parse_git_commits(commits_string):
 
         commit_objects.append(commit_obj)
     return commit_objects
+def timedelta_to_seconds(td):
+    if isinstance(td, timedelta):
+        return td.total_seconds()  # 返回总秒数
+    return td  # 如果不是 timedelta 对象，返回原始值
 
 # function
 def get_time_interval(token_list,git_repo_path):
     # 扫描 Git 历史记录
     time_list = scan_git_history(git_repo_path, token_list)
-    create_time = get_repo_create_time("awacke1/NLP-Lyric-Chorus-Image")
-
+    create_time = get_repo_create_time(git_repo_path.split('/')[-1].replace('_', '/',1))
     inter = []
     for date_str in time_list:
         inter.append(datetime.strptime(date_str, "%a %b %d %H:%M:%S %Y %z") - create_time)
@@ -94,36 +98,31 @@ def scan_git_history(repo_path, Token_list):
     :param sensitive_patterns: 敏感信息的正则表达式列表
     """
     # 确保 Git 允许访问这个目录
-    try:
-        subprocess.run(
-            ["git", "config", "--global", "--add", "safe.directory",
-            repo_path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8"
-        )
-        datetimelist = []
-        # commits = run_git_command(repo_path, ["rev-list", "--all"]).splitlines()
-        commits = run_git_command(repo_path, ["log", "--patch", "--full-history",
-                                              "--date=format:%a %b %d %H:%M:%S %Y %z",
-                                              "--pretty=fuller", "--notes"])
+    subprocess.run(
+        ["git", "config", "--global", "--add", "safe.directory",
+         repo_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8"
+    )
+    datetimelist = []
+    # commits = run_git_command(repo_path, ["rev-list", "--all"]).splitlines()
+    commits = run_git_command(repo_path, ["log", "--all", "--patch", "--full-history",
+                                          "--date=format:%a %b %d %H:%M:%S %Y %z",
+                                          "--pretty=fuller", "--notes"])
 
-        if commits == None :
-            return []
-        commits = commits.splitlines()
-        commit_objects = parse_git_commits(commits)
-        # 输出解析后的 commit 对象
-        for commit in commit_objects:
-            for file in commit.file_changes:
-                for token in Token_list:
-                    if token in file.code_diff:
-                        datetimelist.append(commit.commit_date)
-        return datetimelist
-    except Exception as e:
-        print(e)
-        print(repo_path)
+    if commits == None:
         return []
+    commits = commits.splitlines()
+    commit_objects = parse_git_commits(commits)
+    # 输出解析后的 commit 对象
+    for commit in commit_objects:
+        for file in commit.file_changes:
+            for token in Token_list:
+                if token in file.code_diff:
+                    datetimelist.append(commit.commit_date)
+    return datetimelist
 
 def process_files(repo_root_path,scan_file_path):
     time_intervals = []
@@ -143,20 +142,22 @@ def process_files(repo_root_path,scan_file_path):
                     # 获取token
                     token_list = list(set(entry['raw'] for entry in parsed_list if 'raw' in entry))
                     # 设置仓库路径
-                    git_repo_path = repo_root_path+'/'+repo_name.replace('/','_')
+                    repo_name = repo_name.replace('/', '_', -1)
+                    git_repo_path = repo_root_path+'/'+repo_name
                     # 获取时间间隔
                     time_intervals.append(get_time_interval(token_list,git_repo_path))
                 else:
                     continue
-        except (SyntaxError, ValueError):
-            print(os.path.join(repo_root_path, repo_name))
+        except Exception as e:
+            print(e)
+            print(git_repo_path)
             continue  # 解析失败返回 None
     return time_intervals
 
 
 if __name__ == "__main__":
     # 设定文件路径
-    folder_path = "../Data/"  # 修改为你的实际路径
+    folder_path = "../Data_bk/"  # 修改为你的实际路径
     file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
     all_time_interval = []
     # 获取所有匹配的文件列表
@@ -166,7 +167,7 @@ if __name__ == "__main__":
         time = filename.split("_")[0]
         print("正在处理"+time+'.'*10)
         repo_file_path = f"../../monthly_spaceId_files/{time}.json"
-        scan_file_path = f"../Data/{time}_scan_results.csv"
+        scan_file_path = f"../Data_bk/{time}_scan_results.csv"
         # 将字符串转换为datetime对象
         repo_time = datetime.strptime(time, "%Y-%m")
         if repo_time >= datetime.strptime("2024-03", "%Y-%m"):
@@ -174,9 +175,11 @@ if __name__ == "__main__":
         else:
             repo_root_path = f"F:/download_space/{time}"
         time = process_files(repo_root_path, scan_file_path)
-        all_time_interval.append(time)
-        # 在这里添加你的处理逻辑，例如读取 CSV 进行处理
-    flattened = [item for sublist in all_time_interval for item in sublist]
+        all_time_interval.append(time)# 将 timedelta 对象转换为秒数
+
+        # 假设 all_time_interval 是包含 timedelta 对象的列表
+    flattened = [timedelta_to_seconds(item) for sublist in all_time_interval for item in sublist]
+
     # 将列表保存到 JSON 文件
     with open('time_interval.json', 'w') as f:
         json.dump(flattened, f)
