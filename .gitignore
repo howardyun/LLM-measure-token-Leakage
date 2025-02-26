@@ -182,5 +182,7 @@ Crawl/CrawlarForPromptMarket/CrwalFromSpace/RepoData
 
 /Crawl/CrawlarForPromptMarket/CrwalFromSpace/cookies.pkl
 /Crawl/CrawlarForPromptMarket/CrwalFromSpace/HandleSpaceData/cloned_repos/
-/RQ/Data
-/monthly_spaceId_files
+/Data/Leak_repo_data/Data
+/Data/monthly_spaceId_files
+/Data/Data_bk/
+/OurTools/FromVariable/Output/

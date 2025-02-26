@@ -85,7 +85,7 @@ def process_files(json_file, csv_file):
 
 
 # 设定文件路径
-folder_path = "../Data/"  # 修改为你的实际路径
+folder_path = "../../Data/Leak_repo_data/Data/"  # 修改为你的实际路径
 file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
 
 # 获取所有匹配的文件列表
@@ -105,7 +105,7 @@ for file in csv_files:
     filename = os.path.basename(file)  # 获取文件名
     time = filename.split("_")[0]
     repo_file_path = f"../../monthly_spaceId_files/{time}.json"
-    scan_file_path = f"../Data/{time}_scan_results.csv"
+    scan_file_path = f"../../Data/Leak_repo_data/Data/{time}_scan_results.csv"
     months.append(time)
     print(time + ":")
     repo_list_num, repo_list_leakage_num, total_leakage_token_num = process_files(repo_file_path, scan_file_path)

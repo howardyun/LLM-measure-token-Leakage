@@ -42,7 +42,7 @@ def process_files(repo_list,sensitive_patterns):
 
 
 # 设定文件路径
-folder_path = "../Data/"  # 修改为你的实际路径
+folder_path = "../../Data/Leak_repo_data/Data/"  # 修改为你的实际路径
 file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
 
 # 获取所有匹配的文件列表

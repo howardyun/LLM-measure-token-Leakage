@@ -68,12 +68,16 @@ def calculateLeakageRepoandToken(folder_path, pattern = "*.csv"):
 
 def main():
     # 统计全部的space数量
-    total_repo_path = "../../monthly_spaceId_files/"  # 修改为你的实际路径
+    total_repo_path = "../../Data/monthly_spaceId_files/"  # 修改为你的实际路径
     calculateTotalRepo(total_repo_path)
 
     # 统计具有token leakage的数量
-    leakage_repo_path = "../Data/"  # 修改为你的实际路径
+    leakage_repo_path = "../../Data/Leak_repo_data/Data/"  # 修改为你的实际路径
     calculateLeakageRepoandToken(leakage_repo_path)
+
+
+    print("TotalRepo:", calculateTotalRepo(total_repo_path))
+    print("LeakageRepoandToken:", calculateLeakageRepoandToken(leakage_repo_path))
 
 
 if __name__ == "__main__":
