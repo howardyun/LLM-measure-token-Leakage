@@ -42,7 +42,7 @@ def process_files(repo_list,sensitive_patterns):
 
 
 # 设定文件路径
-folder_path = "../../Data/Leak_repo_data/Data/"  # 修改为你的实际路径
+folder_path = "../../Data/Leak_repo_data/"  # 修改为你的实际路径
 file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
 
 # 获取所有匹配的文件列表
@@ -67,6 +67,25 @@ sensitive_patterns = regexes
 combined_df = pd.concat(df_list, ignore_index=True)
 processed_df = process_files(combined_df,sensitive_patterns)
 
+
+
+# 复制数据，避免修改原始数据
+processed_df = processed_df.copy()
+
+# 将出现次数小于 5 的后缀改为 "other"
+processed_df.index = processed_df.index.where(processed_df >= 5, "other")
+
+# 重新统计，合并所有 "other" 项
+processed_df = processed_df.groupby(processed_df.index).sum()
+
+
+processed_df = processed_df.sort_values(ascending=False)
+
+# 输出结果
+print("文件后缀统计 (小于5个的归为other):")
+print(processed_df)
+
+print(1)
 
 
 
