@@ -195,9 +195,10 @@ def read_commitInfo(repo_path):
             if result:
                 filechange.append(file.code_diff)
                 # print('有高熵字符串')
-            # else:
-                # print("没有高熵字符串")
                 # print(file.code_diff)
+            # else:
+            #     print("没有高熵字符串")
+            #     print(file.code_diff)
         if len(filechange) > 0:
             tmp = ''.join(filechange)
             # print(tmp)

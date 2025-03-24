@@ -148,7 +148,7 @@ def process_files(repo_list,repo_file_list):
 
 
 if __name__ == "__main__":
-    folder_path = "../../Data/Leak_repo_data/Data/"  # 修改为你的实际路径
+    folder_path = "../../Data/Leak_repo_data/"  # 修改为你的实际路径
     file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
 
     # 获取所有匹配的文件列表
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     for file in csv_files:
         filename = os.path.basename(file)  # 获取文件名
         time = filename.split("_")[0]
-        repo_file_path = f"../../monthly_spaceId_files/{time}.json"
+        repo_file_path = f"../../Data/monthly_spaceId_files/{time}.json"
         repo_file_list.append(repo_file_path)
         df = pd.read_csv(file)  # 读取 CSV 文件
         df_list.append(df)  # 将 DataFrame 添加到列表中

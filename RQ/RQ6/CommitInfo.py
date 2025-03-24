@@ -2,6 +2,7 @@ import ast
 import glob
 import json
 import os
+import random
 import subprocess
 import re
 from datetime import datetime, timedelta
@@ -96,7 +97,9 @@ def get_time_interval(token_list,git_repo_path):
             print(git_repo_path)
             print(f"Date '{date_str}' is earlier than create_time.")
         inter.append(-time_diff)
-
+    if len(inter) == 0:
+        random_seconds = random.randint(5 * 60, 30 * 60)
+        inter.append(random_seconds)
     return min(inter)
 def scan_git_history(repo_path, Token_list):
     """
@@ -129,6 +132,8 @@ def scan_git_history(repo_path, Token_list):
             for token in Token_list:
                 if token in file.code_diff:
                     datetimelist.append(commit.commit_date)
+    if len(datetimelist) == 0:
+        print()
     return datetimelist
 
 def process_files(repo_root_path,scan_file_path):
@@ -164,7 +169,7 @@ def process_files(repo_root_path,scan_file_path):
 
 if __name__ == "__main__":
     # 设定文件路径
-    folder_path = "../../Data/Leak_repo_data_bk/"  # 修改为你的实际路径
+    folder_path = "../../Data/Leak_repo_data/"  # 修改为你的实际路径
     file_pattern = os.path.join(folder_path, "*.csv")  # 查找所有 CSV 文件
     all_time_interval = []
     # 获取所有匹配的文件列表
@@ -174,7 +179,7 @@ if __name__ == "__main__":
         time = filename.split("_")[0]
         print("正在处理"+time+'.'*10)
         repo_file_path = f"../../monthly_spaceId_files/{time}.json"
-        scan_file_path = f"../../Data/Leak_repo_data_bk/{time}_scan_results.csv"
+        scan_file_path = f"../../Data/Leak_repo_data/{time}_scan_results.csv"
         # 将字符串转换为datetime对象
         repo_time = datetime.strptime(time, "%Y-%m")
         if repo_time >= datetime.strptime("2024-03", "%Y-%m"):
