@@ -5,7 +5,10 @@ import requests
 
 
 
-content = read_commitInfo("F:/download_space/2022-03/abidlabs_speech-translation")
+# content = read_commitInfo("F:/download_space/2022-03/abidlabs_speech-translation")
+content = read_commitInfo("F:/download_space/2022-03/abby711_FaceRestoration")
+
+
 
 # 设置 API 地址和端口
 url = "http://127.0.0.1:8000/query_commit/"
