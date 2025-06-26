@@ -1,7 +1,7 @@
 {
     "Openai": "sk-(?:ant-api|proj)[a-zA-Z0-9_-]{40,}|sk-svcacct-[A-Za-z0-9_-]{64,}|sk-[A-Za-z0-9_-]+$",
     "Groq":"gsk_[A-Za-z0-9]{46}",
-    "HuggingFace":"^hf_[a-zA-Z0-9]+$|^api_org_",
+    "HuggingFace":"^hf_[a-zA-Z0-9]+$|^api_org_[a-zA-Z0-9]+$",
     "NVIDIA": "nvapi_[a-zA-Z0-9]+$|^nvapi_|^nvapi-",
     "Slack Token": "(xox[pborsa]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})",
     "RSA private key": "-----BEGIN RSA PRIVATE KEY-----|^-----BEGIN PRIVATE KEY-----",
