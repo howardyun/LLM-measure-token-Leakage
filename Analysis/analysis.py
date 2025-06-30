@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-path="C:/Users/szk/Desktop/code/new/LLM-measure-token-Leakage/Analysis/result/"
+path="result/"
 file_names =[]
 for a in os.listdir(path):
     b=path+a
