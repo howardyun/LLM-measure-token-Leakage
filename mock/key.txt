@@ -1,0 +1,9 @@
+huggingface:
+wirte: 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
+read: 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
+
+openai:
+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
+
+mongodb
+"mongodb+srv://Anonymous:isNhPtA6wDWjc-9@cluster0.1ugf2lg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true"

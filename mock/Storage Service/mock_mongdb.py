@@ -5,6 +5,8 @@ from urllib.parse import quote_plus
 from bson import ObjectId
 from datetime import datetime
 
+from pymongo.server_api import ServerApi
+
 # ANSI color codes
 RED = "\033[91m"  # Bright Red
 GREEN = "\033[92m"  # Bright Green
@@ -17,7 +19,7 @@ WARNING_MARKER = "⚠️"  # Warning marker
 def print_mongo_content(uri, filename):
     try:
         # Connect to MongoDB
-        client = pymongo.MongoClient(uri)
+        client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
 
         print(f"{GREEN}{CHECK_MARK} Successfully connected to MongoDB{RESET}")
         with open(filename, "a", encoding='utf-8') as f:

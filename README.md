@@ -37,3 +37,47 @@ https://zenodo.org/records/15752627
 ## 快速开始
 
 ```bash
+
+```
+
+## [mock](mock)文件夹说明
+
+`mock` 文件夹用于模拟不同平台和服务的密钥泄露攻击，帮助用户直观了解密钥泄露后可能造成的安全风险。每个子文件夹和脚本都对应一种常见的密钥类型和攻击方式。
+
+### 结构说明
+
+- `AI Model Provider/`  
+  包含针对主流 AI 服务商（如 OpenAI、Replicate、Groq）的密钥攻击模拟脚本：
+  - `mock_openai.py`：模拟 OpenAI API Key 泄露后的攻击流程，包括验证密钥有效性、文件操作等。
+  - `mock_replicate.py`：模拟 Replicate API Key 泄露后的攻击流程，包括模型推理等。
+  - `mock_groq.py`：模拟 Groq API Key 泄露后的攻击流程，包括模型调用等。
+
+- `Storage Service/`  
+  包含针对云数据库服务的密钥攻击模拟脚本：
+  - `mock_mongdb.py`：模拟 MongoDB 连接密钥泄露后的攻击流程，包括数据库连接、数据遍历等。
+
+- `Code Hosting Platforms/`  
+  包含针对代码托管平台（如 Hugging Face、GitHub）的密钥攻击模拟脚本：
+  - `mock_hf.py`：模拟 Hugging Face Token 泄露后的攻击流程，包括账户信息、模型、数据集、空间等资源的访问。
+  - `mock_github.py`：模拟 GitHub Token 泄露后的攻击流程，包括用户信息、仓库、Gist 等资源的访问。
+  - `icse2026.jsonl`：用于部分脚本（如 OpenAI 文件上传）测试的数据文件。
+
+- `key.txt`  
+  示例密钥文件，包含 Hugging Face、OpenAI、MongoDB 等服务的模拟密钥，供各脚本测试使用。
+
+### 使用方法
+
+1. 进入 `mock` 目录，根据需要选择对应的脚本。
+2. 运行脚本时，将 `key.xtx` 中的密钥作为参数传入。例如：
+   ```bash
+   python mock_openai.py <OpenAI_API_Key>
+   python mock_groq.py <API_Key>
+   python mock_nvidia.py <API_Key>
+   python mock_replicate <API_Key>
+   python mock_mongdb.py <MongoDB_Connection_String>
+   python mock_hf.py <HuggingFace_Token>
+   python mock_github.py <GitHub_Token>
+   ```
+3. 脚本会模拟攻击者利用泄露密钥进行的操作，并输出相关信息，帮助理解风险。
+
+

@@ -70,7 +70,7 @@ def uploading_files(client):
     try:
         # Attempt to upload the file 'icse2026.jsonl' to OpenAI with purpose 'evals'
         file = client.files.create(
-            file=open("icse2026.jsonl", "rb"),  # Open file in binary read mode
+            file=open("../Code Hosting Platforms/icse2026.jsonl", "rb"),  # Open file in binary read mode
             purpose="evals"  # Specify the purpose of the file (e.g., for evaluations)
         )
         print(f"{GREEN}File upload successful{RESET}")
