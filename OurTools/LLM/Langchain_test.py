@@ -13,8 +13,8 @@ def LLM_analysis_file(question):
     # 初始化语言模型
     llm = ChatOpenAI(
         temperature=0,
-        model="glm-4-air-250414",
-        # model="glm-4-plus",
+        # model="glm-4-air-250414",
+        model="glm-4-plus",
         openai_api_key="b39529e090954a2496d240535200e2d3.x93fykyPxeiRroto",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
@@ -62,8 +62,8 @@ def LLM_analysis_commmit(question):
     # 初始化语言模型
     llm = ChatOpenAI(
         temperature=0,
-        model="glm-4-air-250414",
-        # model="glm-4-plus",
+        # model="glm-4-air-250414",
+        model="glm-4-plus",
         openai_api_key="b39529e090954a2496d240535200e2d3.x93fykyPxeiRroto",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
@@ -102,7 +102,6 @@ def LLM_analysis_commmit(question):
     chain = LLMChain(llm=llm, prompt=prompt)
 
     res = chain.invoke(question, verbose=True)  # 运行
-    print(res['text'])
     result = json.loads(res['text'])
     return result
 
@@ -143,4 +142,3 @@ if __name__ == "__main__":
     final_results  = run_parallel_analysis(content, max_workers=6)
     print(final_results)
 
-    
