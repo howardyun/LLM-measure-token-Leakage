@@ -5,6 +5,8 @@ read: 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
 github:
 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
 
+#####################################################################################################
+
 openai:
 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
 
@@ -15,7 +17,10 @@ replicate:
 r8_4H1p5n58frZtXh50NIgj7mpmlzOZUZt3Lagpg
 
 
+Nvidia
+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
 
+#####################################################################################################
 
 mongodb
 "mongodb+srv://Anonymous:isNhPtA6wDWjc-9@cluster0.1ugf2lg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true"
