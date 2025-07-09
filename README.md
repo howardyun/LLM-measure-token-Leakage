@@ -64,8 +64,9 @@ https://zenodo.org/records/15752627
   - `mock_github.py`：模拟 GitHub Token 泄露后的攻击流程，包括用户信息、仓库、Gist 等资源的访问。
   - `icse2026.jsonl`：用于部分脚本（如 OpenAI 文件上传）测试的数据文件。
 
-- `key.txt`  
+- `key.zip`  
   示例密钥文件，包含 Hugging Face、OpenAI、MongoDB 等服务的模拟密钥，供各脚本测试使用。
+  需要注意，我们的测试密钥有可能回失效，您可以通过提交issue来联络我们进行更新。
 
 ### 使用方法
 
