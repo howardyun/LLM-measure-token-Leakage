@@ -9,6 +9,19 @@ from bs4 import BeautifulSoup
 
 from RQ.RQ6.CommitInfoClass import Commit, FileChange
 
+HTML_LIKE_PREFIXES = [
+    "<!DOCTYPE",   # HTML文档声明
+    "<html",       # HTML根标签
+    "<head", "<body", "<title", "<meta", "<link", "<style", "<script",
+    "<div", "<span", "<section", "<article", "<footer", "<header",
+    "<img", "<a", "<p", "<br", "<input", "<form", "<button", "<label",
+    "<ul", "<li", "<ol", "<table", "<tr", "<td", "<th", "<tbody", "<thead",
+    "<h1", "<h2", "<h3", "<h4", "<h5", "<h6",
+    "</html", "</head", "</body", "</div", "</span", "</script", "</style",
+    "<svg", "<canvas", "<iframe", "<object",
+    "<Component", "</Component",  # React JSX
+    "<template", "<slot", "<router-view", "<nuxt-link", "<v-",  # Vue 模板语言
+]
 
 
 # 正则表达式匹配 commit 和 diff（支持每个文件的修改）
@@ -134,21 +147,68 @@ def scan_git_history(repo_path, Token_list):
                 if token in file.code_diff:
                     datetimelist.append(commit.commit_date)
     return datetimelist
+
+
+# def detect_secrets_from_string(file_content: str, entropy_threshold=5.1):
+#     # if is_html_advanced(file_content):
+#     #     file_content = remove_html_tags_safe(file_content)
+#     # 按行拆分
+#     lines = file_content.split("\n")
+#     high_entropy_line = []
+#     for line_number, line in enumerate(lines, start=1):
+#         entropy = shannon_entropy(line.strip())
+#
+#         # 如果熵值高于阈值，记录该行
+#         if entropy > entropy_threshold:
+#             high_entropy_line.append(line.strip())
+#     if len(high_entropy_line) > 0:
+#         return True,high_entropy_line
+#     return False,high_entropy_line
+
+
+def has_structured_subsequence(s, window=4):
+    """
+    判断字符串中是否存在结构化子串（长度为4的滑动窗口）：
+    - AAAA 类型：相同字符
+    - ABCD 类型：连续递增
+    - DCBA 类型：连续递减
+    """
+    s = s.lower().strip()
+    if len(s) < window:
+        return False
+
+    for i in range(len(s) - window + 1):
+        sub = s[i:i+window]
+        if len(set(sub)) == 1:
+            return True  # 重复字符
+        if all(ord(sub[j+1]) - ord(sub[j]) == 1 for j in range(window - 1)):
+            return True  # 递增
+        if all(ord(sub[j+1]) - ord(sub[j]) == -1 for j in range(window - 1)):
+            return True  # 递减
+    return False
+
+def starts_with_html_prefix(line: str) -> bool:
+    line = line.strip().lower()
+    return any(line.startswith(prefix.lower()) for prefix in HTML_LIKE_PREFIXES)
+
 def detect_secrets_from_string(file_content: str, entropy_threshold=5.0):
-    # if is_html_advanced(file_content):
-    #     file_content = remove_html_tags_safe(file_content)
-    # 按行拆分
     lines = file_content.split("\n")
     high_entropy_line = []
     for line_number, line in enumerate(lines, start=1):
-        entropy = shannon_entropy(line.strip())
-
-        # 如果熵值高于阈值，记录该行
+        stripped_line = line.strip()
+        entropy = shannon_entropy(stripped_line)
         if entropy > entropy_threshold:
-            high_entropy_line.append(line.strip())
-    if len(high_entropy_line) > 0:
-        return True,high_entropy_line
-    return False,high_entropy_line
+            if not has_structured_subsequence(stripped_line):  # 加入结构序列排除
+                high_entropy_line.append(stripped_line)
+            if not starts_with_html_prefix(stripped_line):
+                high_entropy_line.append(stripped_line)
+
+    if high_entropy_line:
+        return True, high_entropy_line
+    return False, high_entropy_line
+
+
+
 def detect_secrets_from_string_file(file_content: str, entropy_threshold=5.0):
     # 按行拆分
     lines = file_content.split("\n")
