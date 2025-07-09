@@ -40,7 +40,7 @@ def verify_api_key(api_key: str) -> tuple[bool, Dict[str, Any]]:
         return False, None
 
 
-def test_model_prediction(api_key: str, model: str = "stability-ai/sdxl") -> bool:
+def test_model_prediction(api_key: str, model: str = "black-forest-labs/flux-schnell") -> bool:
     headers = {
         'Authorization': f'Bearer {api_key}',
         'Content-Type': 'application/json',

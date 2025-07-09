@@ -4,6 +4,8 @@ import os
 import re
 from typing import Dict, Any
 
+from openai import OpenAI
+
 # ANSI color codes
 RED = "\033[91m"  # Bright Red
 GREEN = "\033[92m"  # Bright Green
@@ -94,11 +96,7 @@ def main():
     try:
         # In a real implementation, we would use the Groq client
         # For this mock, we'll simulate it with a simple dict
-        client = {"chat": {"completions": {"create": lambda **kwargs: {
-            "model": kwargs.get("model"),
-            "choices": [{"message": {"content": "Fast language models are important because..."}}]
-        }}}}
-
+        client = OpenAI(api_key=api_key,base_url="https://api.groq.com/openai/v1")
         # Step 2: Test chat completion
         if test_chat_completion(client):
             # Rename the output file

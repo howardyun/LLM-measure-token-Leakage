@@ -4,6 +4,8 @@ import os
 import re
 from typing import Optional, Dict, Any
 
+from openai import OpenAI
+
 # ANSI color codes
 RED = "\033[91m"  # Bright Red
 GREEN = "\033[92m"  # Bright Green
@@ -38,21 +40,20 @@ def verify_api_key(api_key: str) -> tuple[bool, Optional[Dict[str, Any]]]:
         return False, None
 
 
-def chat_completion(client: Any, model: str = "meta/llama3-70b", prompt: str = "Hello, world!") -> None:
+def chat_completion(client: Any, model: str = "01-ai/yi-large", prompt: str = "Hello, world!"):
     try:
         print(f"\n>>> Chat completion with model: {model}")
 
         headers = {
             'Authorization': f'Bearer {client.api_key}',
-            'Content-Type': 'application/json'
+            "accept": "application/json",
+            "content-type": "application/json",
         }
 
         payload = {
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7,
-            "top_p": 0.9,
-            "max_tokens": 1024
+            "temperature": 0.7
         }
 
         response = requests.post(
@@ -60,13 +61,12 @@ def chat_completion(client: Any, model: str = "meta/llama3-70b", prompt: str = "
             headers=headers,
             json=payload
         )
-
         if response.status_code == 200:
             completion = response.json()
             print(f"{GREEN}{CHECK_MARK} Chat completion successful{RESET}")
             print(f"Response: {completion['choices'][0]['message']['content']}")
             print(f"Usage: {completion['usage']}")
-            return completion
+            return completion['choices'][0]['message']['content']
         else:
             print(f"{RED}Error in chat completion: {response.status_code}{RESET}")
             print(response.json())
@@ -118,8 +118,8 @@ def main():
         client = NvidiaClient(api_key=api_key)
 
         # Step 2: Chat completion
-        default_model = "meta/llama3-70b" if models_info and any(
-            'llama3-70b' in m['id'] for m in models_info.get('data', [])) else "gpt-3.5-turbo"
+        default_model = "01-ai/yi-large" if models_info and any(
+            'yi-large' in m['id'] for m in models_info.get('data', [])) else "gpt-3.5-turbo"
         prompt = "Explain quantum computing in simple terms"
 
         completion_result = chat_completion(client, model=default_model, prompt=prompt)
@@ -127,6 +127,9 @@ def main():
         # Rename the output file
         new_filename = f"{api_key}_completed.txt"
         os.rename(output_filename, new_filename)
+
+        with open(new_filename, "w", encoding="utf-8") as f:
+            f.write(completion_result)
 
         print(f"{GREEN}{CHECK_MARK} Chat completion test completed{RESET}")
 
