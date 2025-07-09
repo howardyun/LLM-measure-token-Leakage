@@ -44,7 +44,7 @@ def figure_line_chart(months, total_repos, vulnerable_repos, vulnerable_ratio, u
     # 创建第二个 y 轴，绘制仓库出现漏洞的比例，调整格式
     ax2 = ax1.twinx()
     ax2.plot(months, vulnerable_ratio, label="Leak Ratio", color=colors["vulnerable_ratio"], marker='D', linestyle='-', linewidth=2, markersize=8, alpha=0.9)
-    ax2.set_ylabel('Vulnerable Ratio (%)', fontsize=21)
+    ax2.set_ylabel('Leak Ratio (%)', fontsize=21)
     ax2.tick_params(axis='y', labelsize=18)
 
     # 添加图例，并设置字体大小
