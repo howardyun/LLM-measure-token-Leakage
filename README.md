@@ -29,7 +29,12 @@ https://zenodo.org/records/15752627
 
 
 - 功能2
-- 功能3
+- 功能3 密钥验证
+使用ApiVerify.py验证密钥有效性，支持：
+AI模型服务：OpenAI、Groq、Nvidia、Replicate、Deepseek、Gemini、Cohere、Anthropic
+存储服务：MongoDB、PostgreSQL、AWS S3
+代码托管平台：GitHub、Hugging Face
+结果保存为CSV文件，包含字段：Repository、api、organization、valid、available、userinfo、permissions、balance、models、datasets、spaces、context。
 
 ## Dataset
 
