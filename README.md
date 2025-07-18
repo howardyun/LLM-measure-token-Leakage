@@ -28,26 +28,32 @@ Model Scope:
 https://zenodo.org/records/15752627
 
 
-- 功能2
-- 功能3 密钥验证
-使用ApiVerify.py验证密钥有效性，支持：
-AI模型服务：OpenAI、Groq、Nvidia、Replicate、Deepseek、Gemini、Cohere、Anthropic
-存储服务：MongoDB、PostgreSQL、AWS S3
-代码托管平台：GitHub、Hugging Face
-结果保存为CSV文件，包含字段：Repository、api、organization、valid、available、userinfo、permissions、balance、models、datasets、spaces、context。
-
-## Dataset
+### Step2. LLM-based-extraction
 
 
-## 快速开始
 
-```bash
+### Step3 密钥验证
+使用[ApiVerify.py](Analysis%2FApiVerify.py)验证密钥有效性，支持：
+  - AI模型服务
+  - 存储服务
+  - 代码托管平台 \
+结果保存为CSV文件，包含字段：Repository、api、organization、valid、available、\
+userinfo、permissions、balance、models、datasets、spaces、context。
 
-```
+    
+[//]: # (## 快速开始)
+
+[//]: # ()
+[//]: # (```bash)
+
+[//]: # ()
+[//]: # (```)
+
+# 真实世界危害
 
 ## [mock](mock)文件夹说明
 
-`mock` 文件夹用于模拟不同平台和服务的密钥泄露攻击，帮助用户直观了解密钥泄露后可能造成的安全风险。每个子文件夹和脚本都对应一种常见的密钥类型和攻击方式。
+`mock` 文件夹用于模拟不同平台和服务的密钥泄露攻击，帮助研究人员直观了解密钥泄露后可能造成的安全风险。每个子文件夹和脚本都对应一种常见的密钥类型和攻击方式。
 
 ### 结构说明
 
@@ -71,7 +77,9 @@ AI模型服务：OpenAI、Groq、Nvidia、Replicate、Deepseek、Gemini、Cohere
 
 - `key.zip`  
   示例密钥文件，包含 Hugging Face、OpenAI、MongoDB 等服务的模拟密钥，供各脚本测试使用。
-  需要注意，我们的测试密钥有可能回失效，您可以通过提交issue来联络我们进行更新。
+
+
+  #### **🚨🚨🚨需要注意，我们的测试密钥有可能会失效，您可以通过提交issue来联络我们进行更新。**
 
 ### 使用方法
 
