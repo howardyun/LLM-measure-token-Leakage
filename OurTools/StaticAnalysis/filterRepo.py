@@ -3,16 +3,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed  # 或者用 ProcessPoolExecutor
 
 from OurTools.utils import detect_secrets_from_string, read_file_to_string, read_commitInfo, extract_merged_context
-
-TARGET_EXTENSIONS = [
-    '.txt', '.md', '.csv', '.json', '.xml', '.yaml', '.yml', '.jsonl',
-    '.js', '.ts', '.py', '.c', '.cpp', '.h', '.hpp', '.java', '.sh',
-    '.bash', '.conf', '.cfg', '.ini', '.log', '.sql', '.toml',
-    '.jsx', '.tsx', '.vue', '.rb', '.pl', '.php', '.go', '.rs', '.scala', '.dart',
-    '.proto', '.diff', '.patch', '.rst', '.tex', '.bib', '.markdown', '.gitignore',
-    '.properties', '.gradle', '.bat', '.ps1', '.vbs', '.cs', '.csproj', '.sln'
-]
-
 def is_git_repo(path):
     return os.path.isdir(os.path.join(path, ".git"))
 
@@ -23,8 +13,7 @@ def walk_repo_files(repo_path):
         for file in files:
             file_path = os.path.join(root, file)
             _, ext = os.path.splitext(file)
-            if ext in TARGET_EXTENSIONS:
-                yield file_path
+            return file_path
 
 def SecretReviwer(repo_path, output_dir):
     print(f"\n--- Git 仓库: {repo_path} ---")
