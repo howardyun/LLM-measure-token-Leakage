@@ -68,6 +68,6 @@ def traverse_all_repos_parallel(base_dir, output_dir, max_workers=6):
                 print(f"[!] 某个任务执行出错: {e}")
 
 if __name__ == "__main__":
-    base_directory = r"Z:\MiniDataset-bk"  # 修改为你的路径
-    output_directory = r"Z:\Minidataset_output\static_result"
-    traverse_all_repos_parallel(base_directory, output_directory, max_workers=8)  # 并行度可调
+    base_directory = r""  # change to your path
+    output_directory = r"Z"
+    traverse_all_repos_parallel(base_directory, output_directory, max_workers=8)  # par
