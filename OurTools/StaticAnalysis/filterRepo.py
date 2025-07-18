@@ -35,7 +35,6 @@ def SecretReviwer(repo_path, output_dir):
         "RepoName": repo_path,
         "file": file_leak,
         "commit": commit_contents,
-        "is_student": False
     }
 
     if len(file_leak) > 0 or len(commit_contents) > 0:
