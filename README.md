@@ -1,105 +1,91 @@
 # SecretReviewr
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 [![Build Status](https://travis-ci.org/username/repo.svg?branch=master)](https://travis-ci.org/username/repo)
 
-本项目主要用于检测Hugging Face Space代码仓库以及ModelScope Space中的密钥泄露。
+This project is primarily designed to detect secret key leaks in code repositories from Hugging Face Spaces and ModelScope Spaces.
 
+## Features
 
+### Step 1. Data Collection  
+Use the scripts in the [DataCollection](DataCollection) directory to locally collect all Hugging Face and ModelScope code repositories.  
+- For Hugging Face: First, run [getSpaceID.py](DataCollection%2FHF%2FgetSpaceID.py) to obtain all public Spaces.  
+  After retrieving the list of Spaces created each month, use [DownloadFromFile_space.py](DataCollection%2FHF%2FDownloadFromFile_space.py) to download the corresponding code repositories.
 
-## 功能特性
+- For ModelScope: Run [CollectSpaceList.py](DataCollection%2FModelScope%2FCollectSpaceList.py) to gather all public Spaces.  
+  *(Note: Since ModelScope does not provide an official API, this step is implemented via web scraping.)*  
+  You can then use [DownloadFromFile_space_modelscope.py](DataCollection%2FModelScope%2FDownloadFromFile_space_modelscope.py) to download the Space code.
 
-### Step1.数据收集
-使用[DataCollection](DataCollection)文件中的文件在本地收集所有的Huggingface以及ModelScope的代码。 
-- 对于Huggingface来说，您先需要通过运行文件[getSpaceID.py](DataCollection%2FHF%2FgetSpaceID.py)获得所有的在HF Space中公开的代码仓库，
-在获得每个月创建的Space仓库列表之后，您可以使用文件[DownloadFromFile_space.py](DataCollection%2FHF%2FDownloadFromFile_space.py)对所有的Space代码进行下载。
+Due to the large volume of data, we have extracted 1,000 code repositories from each platform for easier testing:
 
-- 对于Huggingface来说，您先需要通过运行文件[CollectSpaceList.py](DataCollection%2FModelScope%2FCollectSpaceList.py)获得所有的在ModelScope中公开的Space代码仓库，
-在获得所有列表之后（需要注意的是，由于ModelScope不提供相关API，在这里我们使用的是爬虫方法进行的实现），
-- 您可以使用文件[DownloadFromFile_space_modelscope.py](DataCollection%2FModelScope%2FDownloadFromFile_space_modelscope.py)对所有的Space代码进行下载。
+- Hugging Face: https://zenodo.org/records/15752077  
+- ModelScope: https://zenodo.org/records/15752627  
 
+### Step 2. LLM-Based Extraction  
+You can find the relevant implementation in the [OurTools](OurTools) directory.  
+- Use [filterRepo.py](OurTools%2FStaticAnalysis%2FfilterRepo.py) to perform static analysis and extract candidate files and relevant commit history.  
+- Use [LLM_main.py](OurTools%2FLLM%2FLLM_main.py) to run secret leakage detection using a combination of static analysis and large language models.
 
-考虑到下载数据过大，我们分别在两个平台的数据集中提取出了1000个代码仓库便于您进行测试:
+### Step 3. Secret Key Verification  
+Use [ApiVerify.py](Analysis%2FApiVerify.py) to verify the validity of the detected secrets. It supports the following services:
+- AI model service providers
+- Cloud storage services
+- Code hosting platforms  
 
-Hugging Face:
-https://zenodo.org/records/15752077
+The results will be saved in a CSV file with the following fields:  
+`Repository`, `api`, `organization`, `valid`, `available`, `userinfo`, `permissions`, `balance`, `models`, `datasets`, `spaces`, `context`.
 
-Model Scope:
-https://zenodo.org/records/15752627
+## Real-World Threat Simulation
 
+### Overview of the [mock](mock) Directory
 
-### Step2. LLM-based-extraction
-您可以在这个文件夹中找到[OurTools](OurTools)中找到相关的代码文件。
+The `mock` directory is designed to simulate attacks resulting from secret key leakage across various platforms and services, helping researchers understand the real-world risks of such incidents. Each subfolder or script corresponds to a common type of key and its exploitation method.
 
+### Directory Structure
 
+- **AI Model Provider/**  
+  Simulates secret key leakage for popular AI platforms (e.g., OpenAI, Replicate, Groq):  
+  - `mock_openai.py`: Simulates exploitation of OpenAI API keys, including key validation, file operations, etc.  
+  - `mock_replicate.py`: Simulates Replicate API key misuse, including model inference.  
+  - `mock_groq.py`: Simulates Groq API key leakage and model invocation.  
+  - `mock_nvidia.py`: Simulates Nvidia API key leakage and model invocation.
 
-### Step3 密钥验证
-使用[ApiVerify.py](Analysis%2FApiVerify.py)验证密钥有效性，支持：
-  - AI模型服务
-  - 存储服务
-  - 代码托管平台 \
-结果保存为CSV文件，包含字段：Repository、api、organization、valid、available、\
-userinfo、permissions、balance、models、datasets、spaces、context。
+- **Storage Service/**  
+  Simulates leakage scenarios for cloud databases:  
+  - `mock_mongdb.py`: Simulates attacks using leaked MongoDB connection strings, including connection and data access.
 
-    
-[//]: # (## 快速开始)
+- **Code Hosting Platforms/**  
+  Simulates exploitation of credentials for code hosting services (e.g., Hugging Face, GitHub):  
+  - `mock_hf.py`: Simulates Hugging Face token leakage, including access to user info, models, datasets, and Spaces.  
+  - `mock_modelscope.py`: Simulates ModelScope token leakage, including access to models, datasets, and APIs.  
+  - `mock_github.py`: Simulates GitHub token leakage, including access to user info, repositories, Gists, etc.  
+  - `icse2026.jsonl`: Sample data file used for specific scripts (e.g., OpenAI upload test).
 
-[//]: # ()
-[//]: # (```bash)
+- **key.zip**  
+  Example key file containing simulated API keys for Hugging Face, OpenAI, MongoDB, etc., used for testing purposes.
 
-[//]: # ()
-[//]: # (```)
+> 🚨 **Note**: These test keys may become invalid over time. If needed, please submit an issue to request updates.
 
-# 真实世界危害
+### How to Use
 
-## [mock](mock)文件夹说明
+1. Navigate to the `mock` directory and choose the relevant script for the platform or service you wish to test.
+2. When running a script, pass the key from `key.txt` as a parameter. Example usage:
 
-`mock` 文件夹用于模拟不同平台和服务的密钥泄露攻击，帮助研究人员直观了解密钥泄露后可能造成的安全风险。每个子文件夹和脚本都对应一种常见的密钥类型和攻击方式。
+```bash
+python mock_openai.py <OpenAI_API_Key>
+python mock_groq.py <API_Key>
+python mock_nvidia.py <API_Key>
+python mock_replicate.py <API_Key>
+```
 
-### 结构说明
+```bash
+python mock_mongdb.py <MongoDB_Connection_String>
+```
 
-- `AI Model Provider/`  
-  包含针对主流 AI 服务商（如 OpenAI、Replicate、Groq）的密钥攻击模拟脚本：
-  - `mock_openai.py`：模拟 OpenAI API Key 泄露后的攻击流程，包括验证密钥有效性、文件操作等。
-  - `mock_replicate.py`：模拟 Replicate API Key 泄露后的攻击流程，包括模型推理等。
-  - `mock_groq.py`：模拟 Groq API Key 泄露后的攻击流程，包括模型调用等。
-  - `mock_nvidia.py`：模拟 Nvidia API Key 泄露后的攻击流程，包括模型调用等。
+```bash
+python mock_hf.py <HuggingFace_Token>
+python mock_github.py <GitHub_Token>
+python mock_modelscope.py <ModelScope_Token>
+```
 
-- `Storage Service/`  
-  包含针对云数据库服务的密钥攻击模拟脚本：
-  - `mock_mongdb.py`：模拟 MongoDB 连接密钥泄露后的攻击流程，包括数据库连接、数据遍历等。
-
-- `Code Hosting Platforms/`  
-  包含针对代码托管平台（如 Hugging Face、GitHub）的密钥攻击模拟脚本：
-  - `mock_hf.py`：模拟 Hugging Face Token 泄露后的攻击流程，包括账户信息、模型、数据集、空间等资源的访问。
-  - `mock_modelscope.py`：模拟 Modelscope Token 泄露后的攻击流程，包括模型、数据集、模型调用等资源的访问。
-  - `mock_github.py`：模拟 GitHub Token 泄露后的攻击流程，包括用户信息、仓库、Gist 等资源的访问。
-  - `icse2026.jsonl`：用于部分脚本（如 OpenAI 文件上传）测试的数据文件。
-
-- `key.zip`  
-  示例密钥文件，包含 Hugging Face、OpenAI、MongoDB 等服务的模拟密钥，供各脚本测试使用。
-
-
-  #### **🚨🚨🚨需要注意，我们的测试密钥有可能会失效，您可以通过提交issue来联络我们进行更新。**
-
-### 使用方法
-
-1. 进入 `mock` 目录，根据需要选择对应的脚本。
-2. 运行脚本时，将 `key.xtx` 中的密钥作为参数传入。例如：
-   ```bash
-   python mock_openai.py <OpenAI_API_Key>
-   python mock_groq.py <API_Key>
-   python mock_nvidia.py <API_Key>
-   python mock_replicate <API_Key>
-    ```
-   ```bash
-   python mock_mongdb.py <MongoDB_Connection_String>
-   ```
-   ```bash
-   python mock_hf.py <HuggingFace_Token>
-   python mock_github.py <GitHub_Token>
-   python mock_modelscope.py <GitHub_Token>
-   ```
-3. 脚本会模拟攻击者利用泄露密钥进行的操作，并输出相关信息，帮助理解风险。
-
-
+3. The script will simulate an attacker using the leaked secret key and output relevant information to help illustrate the risk.

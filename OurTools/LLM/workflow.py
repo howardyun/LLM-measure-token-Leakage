@@ -61,5 +61,5 @@ def traverse_all_repos(base_dir):
 
 if __name__ == "__main__":
     # 使用示例
-    base_directory = r"Z:\MiniDataset"  # 修改为你的路径
+    base_directory = r""  # change to your path
     traverse_all_repos(base_directory)

@@ -13,9 +13,8 @@ def LLM_analysis_file(question):
     # 初始化语言模型
     llm = ChatOpenAI(
         temperature=0,
-        # model="glm-4-air-250414",
         model="glm-4-plus",
-        openai_api_key="b39529e090954a2496d240535200e2d3.x93fykyPxeiRroto",
+        openai_api_key="",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
             "response_format": {"type": "json_object"}  # 确保输出JSON格式
@@ -62,9 +61,8 @@ def LLM_analysis_commmit(question):
     # 初始化语言模型
     llm = ChatOpenAI(
         temperature=0,
-        # model="glm-4-air-250414",
         model="glm-4-plus",
-        openai_api_key="b39529e090954a2496d240535200e2d3.x93fykyPxeiRroto",
+        openai_api_key="",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
             "response_format": {"type": "json_object"}  # 确保输出JSON格式

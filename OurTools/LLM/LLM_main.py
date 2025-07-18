@@ -92,5 +92,5 @@ def traverse_all_repos(base_dir,output_dir):
     print('pause')
 
 if __name__ == '__main__':
-    output_dir = r'Z:/Minidataset_output/LLM_result'
-    traverse_all_repos('Z:\Minidataset_output\static_result',output_dir)
+    output_dir = r''        ###change to your path
+    traverse_all_repos('',output_dir)  ###change to your path

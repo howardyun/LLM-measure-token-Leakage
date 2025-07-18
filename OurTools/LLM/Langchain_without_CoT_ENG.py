@@ -14,7 +14,7 @@ def LLM_analysis_file(question):
     llm = ChatOpenAI(
         temperature=0,
         model="glm-4-plus",
-        openai_api_key="", #change to your token
+        openai_api_key="",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
             "response_format": {"type": "json_object"}  # 确保输出JSON格式
@@ -22,9 +22,10 @@ def LLM_analysis_file(question):
     )
 
     template = '''
-            你是一位计算机网络安全专家，你需要检查用户的这个代码文件中是否含Secret泄露（APIToken，Credential,keys等），文件内容如下：{question}？
-           
-            请用以下JSON格式输出：
+            You are a computer network security expert. You are required to inspect the following code file provided by the user to determine whether it contains any secret leaks (such as API tokens, credentials, keys, etc.). The content of the file is as follows:
+            {question}
+
+            Please output your findings in the following JSON format:
             {{
                 "leaked_tokens": [
             {{
@@ -55,9 +56,8 @@ def LLM_analysis_commmit(question):
     # 初始化语言模型
     llm = ChatOpenAI(
         temperature=0,
-
         model="glm-4-plus",
-        openai_api_key="",    #change to your token
+        openai_api_key="",
         openai_api_base="https://open.bigmodel.cn/api/paas/v4/",
         model_kwargs={
             "response_format": {"type": "json_object"}  # 确保输出JSON格式
@@ -65,8 +65,10 @@ def LLM_analysis_commmit(question):
     )
 
     template = '''
-        你是一位计算机网络安全专家，你需要检查用户的这个代码仓库中的commit历史信息中是否含Secret泄露（APIToken，Credential,keys等），文件内容如下：{question}？
-            请用以下JSON格式输出：
+        You are a computer network security expert. You are required to inspect the following code file provided by the user to determine whether it contains any secret leaks (such as API tokens, credentials, keys, etc.). The content of the file is as follows:
+            {question}
+
+            Please output your findings in the following JSON format:
             {{
                 "leaked_tokens": [
             {{
@@ -113,10 +115,7 @@ def run_parallel_analysis(all_commits, max_workers=5):
 
 
 if __name__ == "__main__":
-    # content = read_file("F:/download_space/2022-03/Prathap_sql_quries/GPT_SECRET_KEY.json")
-    # print(content)
-    # content = read_commitInfo("F:/download_space/2022-03/Prathap_sql_quries")
-    content = read_commitInfo(r"Z:\MiniDataset-bk\dpv_Stage2Recycling")
+    content = read_commitInfo(r"")
     # abidlabs / speech - translation
     for c in content:
         print('#' * 100)
